@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ai_factory/page/chatGPT_page.dart';
 import 'package:ai_factory/secret.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -82,7 +83,14 @@ class _openChatGPT extends State<openChatGPT> {
             if (content == null) const Text('結果はまだありません') else Text(content!),
             ElevatedButton(
               onPressed: () {
-                sendToChatGPT();
+                // sendToChatGPT();
+                
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatGPT(),
+                  ));
+
               },
               child: const Text('送信'),
             ),
