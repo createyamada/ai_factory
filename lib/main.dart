@@ -30,42 +30,8 @@ class openChatGPT extends StatefulWidget {
 
 class _openChatGPT extends State<openChatGPT> {
  
-  String? content;
 
-  final controller = TextEditingController();
 
-  Future<void> sendToChatGPT() async {
-    final response = await post(
-      Uri.parse('https://api.openai.com/v1/chat/completions'),
-      headers: {
-        'Authorization': 'Bearer $API_KEY',
-        'Content-Type': 'application/json',
-        // 'OpenAI-Organization': 'org-3kJ8f2NS5osyB5W4JgEzVpha',
-      },
-      body: jsonEncode({
-        "model": "gpt-3.5-turbo",
-        "messages": [
-          {
-            "role": "user",
-            "content": controller.text,
-          }
-        ],
-      }),
-    );
-
-    final jsonResponse = jsonDecode(utf8.decode(response.body.codeUnits))
-        as Map<String, dynamic>;
-
-    content =
-        (jsonResponse['choices'] as List).first['message']['content'] as String;
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,14 +43,10 @@ class _openChatGPT extends State<openChatGPT> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFormField(
-              controller: controller,
-            ),
-            if (content == null) const Text('結果はまだありません') else Text(content!),
+   
+            Text("AIどんどん使ってこうぜ！！"),
             ElevatedButton(
               onPressed: () {
-                // sendToChatGPT();
-                
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -92,7 +54,18 @@ class _openChatGPT extends State<openChatGPT> {
                   ));
 
               },
-              child: const Text('送信'),
+              child: const Text('ChatGPT（自動文字生成）を利用する'),
+            ),
+           ElevatedButton(
+              onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatGPT(),
+                  ));
+
+              },
+              child: const Text('STABLEDEFFUSION（自動画像生成）を利用する'),
             ),
           ],
         ),
