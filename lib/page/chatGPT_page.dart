@@ -1,7 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+
+import '../secret.dart';
 
 List<Widget> contentWidgets = [];
 String inputText = "";
+String? resText;
+bool buttonState = false;
 
 
 class ChatGPT extends StatefulWidget {
@@ -13,9 +20,51 @@ class ChatGPT extends StatefulWidget {
 
 class _ChatGPT extends State<ChatGPT> {
 
-  addWidget(String message) {
-    contentWidgets.add(meText(message));
+  final controller = TextEditingController();
+
+  addWidget(String message) async {
+    buttonState = true;
     setState(() {});
+    contentWidgets.add(meText(message));
+    await sendToChatGPT(message);
+    contentWidgets.add(anotherText(resText.toString()));
+    buttonState = false;
+    setState(() {});
+  }
+
+  // Future<void> sendToChatGPT(String message) async {
+  Future<void> sendToChatGPT(String message) async {
+    final response = await post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: {
+        'Authorization': 'Bearer $API_KEY',
+        'Content-Type': 'application/json',
+        // 'OpenAI-Organization': 'org-3kJ8f2NS5osyB5W4JgEzVpha',
+      },
+      body: jsonEncode({
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {
+            "role": "user",
+            "content": controller.text,
+          }
+        ],
+      }),
+    );
+
+    final jsonResponse 
+    
+    = jsonDecode(utf8.decode(response.body.codeUnits))
+        as Map<String, dynamic>;
+
+     resText =
+        (jsonResponse['choices'] as List).first['message']['content'] as String;
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -39,11 +88,7 @@ class _ChatGPT extends State<ChatGPT> {
               ),
               child: Column(
                 children: 
-                // <Widget>[
                   contentWidgets
-                  // meText("私の出身大学は"),
-                  // anotherText("東海大学政治経済学部")
-                // ],
               ),
             )
           ),
@@ -140,21 +185,17 @@ class _ChatGPT extends State<ChatGPT> {
                       borderRadius: BorderRadius.circular(40)
                     ),
                   child: TextField(
+                    controller: controller,
                     decoration: InputDecoration(border: InputBorder.none),
                   ),
                 )),
                 ElevatedButton(
-                  onPressed:() {
-                    addWidget(inputText);
+                  onPressed: buttonState ? null : () {
+                    addWidget(controller.text);
                   },
                   child: const Text('送信'),
                 ),
               ],
             ));
   }
-  
-  // addWidget(String message) {
-  //   contentWidgets.add(meText(message));
-  //   setState(() {});
-  // }
 }
