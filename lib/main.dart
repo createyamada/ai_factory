@@ -1,10 +1,5 @@
-import 'dart:convert';
-
 import 'package:ai_factory/page/chatGPT_page.dart';
-import 'package:ai_factory/secret.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart';
 
 void main() {
   runApp(const MyApp());
